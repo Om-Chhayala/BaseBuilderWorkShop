@@ -24,15 +24,32 @@ app.post('/postTodo', (req, res) => {
 });
 
 app.get('/getTodo', (req, res) => {
-    Todo.find()  // Find all todos in the collection
+    Todo.find()  
         .then((todos) => {
-            res.json(todos);  // Return all Todos as JSON
+            res.json(todos);  
         })
         .catch((err) => {
             console.error(err);
             res.status(500).json({ error: 'Failed to retrieve todos' });
         });
 });
+
+app.delete('/deleteTodo/:id', (req, res) => {
+    const { id } = req.params; 
+
+    Todo.findByIdAndDelete(id) 
+        .then((deletedTodo) => {
+            if (!deletedTodo) {
+                return res.status(404).json({ error: 'Todo not found' }); 
+            }
+            res.status(200).json({ message: 'Todo deleted successfully', deletedTodo });  
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).json({ error: 'Failed to delete todo' });
+        });
+});
+
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
